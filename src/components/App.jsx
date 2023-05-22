@@ -1,36 +1,26 @@
 import { useState } from 'react';
-import ContactList from "./ContactList";
-import NameForm from "./NameForm";
+import ContactList from './ContactList';
+import Filter from './Filter';
+import NameForm from './NameForm';
 export const App = () => {
-  const [formData, setFormData] = useState({
-        contacts: [],
-        name: '',
-        number: '',
-    });
-   
-    function handleInputChange(event) {
-        const { name, value } = event.target;
-    setFormData(prev => {
-      return { ...prev, [name]: value };
-    });
-  }
-   const [contact, setContact] = useState(null);
-    function handleAddContact(event) {
-        event.preventDefault();
-        setContact(prev => {
-            return {...prev, [formData.name]: formData.number }
-        })
-}
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+
+  const filteredContacts = contacts.filter(
+    contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase()) ||
+      contact.number.includes(Number(filter))
+  );
+  const handleDelete = id => {
+    setContacts(prevState => prevState.filter(contact => contact.id !== id));
+  };
   return (
     <div>
       <h2>Phonebook</h2>
-      <NameForm
-        onChange={handleInputChange}
-      onClick={handleAddContact} />
-      <ContactList
-      contacts={formData.contacts}
-        name={formData.name}
-        number={formData.number}/>
+      <NameForm setContacts={setContacts} contacts={contacts} />
+      <Filter filter={filter} setFilter={setFilter}/>
+      <ContactList filteredContacts={filteredContacts}
+        handleDelete={handleDelete} />
     </div>
   );
 };
